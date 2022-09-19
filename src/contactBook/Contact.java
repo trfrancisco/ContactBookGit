@@ -1,6 +1,7 @@
 package contactBook;
 
 public class Contact {
+
     private String name;
     private int phone;
     private String email;
@@ -15,24 +16,23 @@ public class Contact {
         return name;
     }
 
-    public int getPhone() {
-        return phone;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getEmail() {
-        return email;
+    public int getPhone() {
+        return phone;
     }
 
     public void setPhone(int phone) {
         this.phone = phone;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public String getEmail() {
+        return email;
     }
 
-    //Pre: otherContact != null
-    public boolean equals(Contact otherContact) {
-        return name.equals(otherContact.getName());
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
