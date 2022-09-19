@@ -1,96 +1,123 @@
 package contactBook;
-
-import contactBook.Contact;
-
+import java.util.*;
 public class ContactBook {
-    static final int DEFAULT_SIZE = 100;
 
-    private int counter;
-    private Contact[] contacts;
-    private int currentContact;
+    private HashMap<String, Contact> contactMap;
+    private ArrayList<Contact> listContact;
+    private HashMap<Integer, ArrayList<Contact>> listNumbers;
+    private int totalContacts;
+    private int next;
+    private int repeatNumbers;
 
-    public ContactBook() {
-        counter = 0;
-        contacts = new Contact[DEFAULT_SIZE];
-        currentContact = -1;
+
+    public ContactBook(){
+        next=0;
+        totalContacts=0;
+        listContact = new ArrayList<Contact>();
+        contactMap = new HashMap<String, Contact>();
+        listNumbers = new HashMap<Integer, ArrayList<Contact>>();
+        repeatNumbers=0;
     }
-
     //Pre: name != null
-    public boolean hasContact(String name) {
-        return searchIndex(name) >= 0;
-    }
-
-    public int getNumberOfContacts() {
-        return counter;
+    public  boolean hasContact(String name){
+        return contactMap.containsKey(name);
     }
 
     //Pre: name!= null && !hasContact(name)
-    public void addContact(String name, int phone, String email) {
-        if (counter == contacts.length)
-            resize();
-        contacts[counter] = new Contact(name, phone, email);
-        counter++;
+    public void addContact(String name, int phone, String email){
+        Contact newContact = new Contact(name, phone, email);
+        contactMap.put(name, newContact);
+        listContact.add(newContact);
+        insertListNumbers(phone, newContact);
+        totalContacts++;
     }
 
     //Pre: name != null && hasContact(name)
-    public void deleteContact(String name) {
-        int index = searchIndex(name);
-        for(int i=index; i<counter; i++)
-            contacts[i] = contacts[i+1];
-        counter--;
+    public void deleteContact(String name){
+        Contact toDelete= getContact(name);
+        contactMap.remove(name);
+        listContact.remove(toDelete);
+        removeListNumbers(toDelete);
+        totalContacts--;
     }
 
     //Pre: name != null && hasContact(name)
-    public int getPhone(String name) {
-        return contacts[searchIndex(name)].getPhone();
+    public int getPhone(String name){
+        return getContact(name).getPhone();
     }
 
     //Pre: name != null && hasContact(name)
-    public String getEmail(String name) {
-        return contacts[searchIndex(name)].getEmail();
+    public String getEmail(String name){
+        return getContact(name).getEmail();
     }
 
     //Pre: name != null && hasContact(name)
-    public void setPhone(String name, int phone) {
-        contacts[searchIndex(name)].setPhone(phone);
+    public void setPhone(String name, int phone){
+        Contact contact = getContact(name);
+        removeListNumbers(contact);
+        contact.setPhone(phone);
+        insertListNumbers(phone, contact);
     }
 
     //Pre: name != null && hasContact(name)
-    public void setEmail(String name, String email) {
-        contacts[searchIndex(name)].setEmail(email);
+    public void setEmail(String name, String email){
+        getContact(name).setEmail(email);
     }
 
-    private int searchIndex(String name) {
-        int i = 0;
-        int result = -1;
-        boolean found = false;
-        while (i<counter && !found)
-            if (contacts[i].getName().equals(name))
-                found = true;
-            else
-                i++;
-        if (found) result = i;
-        return result;
+    public int getNumberOfContacts(){
+        return totalContacts;
     }
 
-    private void resize() {
-        Contact tmp[] = new Contact[2*contacts.length];
-        for (int i=0;i<counter; i++)
-            tmp[i] = contacts[i];
-        contacts = tmp;
+    public void initializeIterator(){
+        next=0;
     }
 
-    public void initializeIterator() {
-        currentContact = 0;
-    }
-
-    public boolean hasNext() {
-        return (currentContact >= 0 ) && (currentContact < counter);
+    public boolean hasNext(){
+        return next<totalContacts;
     }
 
     //Pre: hasNext()
-    public Contact next() {
-        return contacts[currentContact++];
+    public Contact next(){
+        return listContact.get(next++);
     }
 
+    //Pre: phone != null
+    public boolean hasNumber(int phone){
+        return listNumbers.containsKey(phone);
+    }
+
+    //Pre: phone != null
+    public String getContactByPhone(int phone){
+        return listNumbers.get(phone).get(0).getName();
+    }
+
+    public boolean hasRepeatedNumbers(){
+        return repeatNumbers>0;
+    }
+
+    //Pre: name != null
+    private Contact getContact(String name){
+        return contactMap.get(name);
+    }
+
+    //Pre: hasContact(name)
+    private void removeListNumbers(Contact toDelete){
+        if(listNumbers.get(toDelete.getPhone()).size()==1)
+            listNumbers.remove(toDelete.getPhone());
+        else{
+            listNumbers.get(toDelete.getPhone()).remove(toDelete);
+            repeatNumbers--;
+        }
+    }
+    //Pre: hasContact(name) && phone !=null
+    private void insertListNumbers(int phone, Contact newContact){
+        if(listNumbers.containsKey(phone)) {
+            listNumbers.get(phone).add(newContact);
+            repeatNumbers++;
+        }else {
+            ArrayList<Contact> list = new ArrayList<Contact>();
+            list.add(newContact);
+            listNumbers.put(phone,list);
+        }
+    }
 }
