@@ -16,7 +16,6 @@ public class Contact {
         return name;
     }
 
-
     public void setName(String name) {
         this.name = name;
     }
@@ -37,3 +36,5 @@ public class Contact {
         this.email = email;
     }
 }
+
+
