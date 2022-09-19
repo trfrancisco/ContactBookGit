@@ -13,7 +13,9 @@ public class Main {
     public static final String SET_PHONE      = "SP";
     public static final String SET_EMAIL      = "SE";
     public static final String LIST_CONTACTS  = "LC";
+    public static final String CONTACT_BY_NUMBER  = "GN";
     public static final String QUIT           = "Q";
+    public static final String REPETEAD_PHONES="EP";
 
     //Constantes que definem as mensagens para o utilizador
     public static final String CONTACT_EXISTS = "contactBook.Contact already exists.";
@@ -22,6 +24,9 @@ public class Main {
     public static final String CONTACT_REMOVED = "contactBook.Contact removed.";
     public static final String CONTACT_UPDATED = "contactBook.Contact updated.";
     public static final String BOOK_EMPTY = "contactBook.Contact book empty.";
+    public static final String NUMBER_NOT_EXISTS="Phone number does not exist.";
+    public static final String EXIST_CONTACTS_SAME_NUMBER="There are contacts that share phone numbers.";
+    public static final String ALL_NUMBER_DIFFERENT ="All contacts have different phone numbers.";
     public static final String QUIT_MSG = "Goodbye!";
     public static final String COMMAND_ERROR = "Unknown command.";
 
@@ -53,6 +58,12 @@ public class Main {
                 case LIST_CONTACTS:
                     listAllContacts(cBook);
                     break;
+                case CONTACT_BY_NUMBER:
+                    contactByNumber(in,cBook);
+                    break;
+                case REPETEAD_PHONES:
+                    hasRepeatedPhones(cBook);
+                    break;
                 default:
                     System.out.println(COMMAND_ERROR);
             }
@@ -60,7 +71,6 @@ public class Main {
             comm = getCommand(in);
         }
         System.out.println(QUIT_MSG);
-        System.out.println();
         in.close();
     }
 
@@ -146,5 +156,23 @@ public class Main {
             }
         }
         else System.out.println(BOOK_EMPTY);
+    }
+
+    private static void contactByNumber(Scanner in, ContactBook cBook){
+        int phone;
+        phone=in.nextInt();
+        in.nextLine();
+        if(cBook.hasNumber(phone)){
+            System.out.printf("%s\n", cBook.getContactByPhone(phone));
+        }else{
+            System.out.println(NUMBER_NOT_EXISTS);
+        }
+    }
+
+    private static void hasRepeatedPhones(ContactBook cBook){
+        if(cBook.hasRepeatedNumbers())
+            System.out.println(EXIST_CONTACTS_SAME_NUMBER);
+        else
+            System.out.println(ALL_NUMBER_DIFFERENT);
     }
 }
